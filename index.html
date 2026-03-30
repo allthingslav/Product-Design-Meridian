@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Hi-Fi Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500&family=Open+Sans:ital,wght@0,300;0,400;0,500;1,300&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base:#0b0e0b;
+  --s1:#0f130f;
+  --s2:#141a14;
+  --card:#161c16;
+  --card2:#1c211c;
+  --g400:#a3e635;
+  --g300:#86efac;
+  --g200:#4ade80;
+  --teal:#2dd4bf;
+  --gold5:#eab308;
+  --gold3:#fcd34d;
+  --danger:#f87171;
+  --blue:#60a5fa;
+  --muted:#7a8578;
+  --t1:#e8ebe6;
+  --t2:#7a8578;
+  --t3:#3d4a3b;
+  --b1:rgba(74,222,128,0.08);
+  --b2:rgba(74,222,128,0.15);
+  --bn:rgba(255,255,255,0.07);
+  --fh:'Plus Jakarta Sans',sans-serif;
+  --fb:'Open Sans',sans-serif;
+  --fm:'IBM Plex Mono',monospace;
+  --rsm:6px;
+  --rmd:8px;
+  --rlg:12px;
+  --rxl:16px;
+  --rpill:20px;
+}
+
+body{background:#060806;color:var(--t1);font-family:var(--fb);font-size:13px;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* ── SCREEN SYSTEM ── */
+.screens{min-height:100vh;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ── LOGIN SCREENS ── */
+.login-screen{
+  min-height:100vh;
+  width:100%;
+  display:flex;
+}
+.login-left{
+  width:40%;
+  background:linear-gradient(160deg,rgba(74,222,128,0.05) 0%,transparent 60%);
+  border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:48px;
+  position:relative;overflow:hidden;
+}
+.login-left::before{
+  content:'';position:absolute;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(74,222,128,0.06) 0%,transparent 70%);
+  top:20%;left:30%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.login-right{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;
+  padding:48px;
+}
+.login-form{width:100%;max-width:360px;}
+.lf-wordmark{font-family:var(--fh);font-size:28px;font-weight:400;letter-spacing:-0.03em;color:var(--t1);display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.lf-tagline{font-size:13px;font-weight:300;color:var(--t2);text-align:center;max-width:220px;line-height:1.65;}
+.lf-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:20px;}
+.lf-h2{font-family:var(--fh);font-size:20px;font-weight:400;color:var(--t1);margin-bottom:5px;letter-spacing:-0.02em;}
+.lf-sub{font-size:12px;font-weight:300;color:var(--t2);margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.lbl{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:5px;}
+.inp{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rsm);padding:9px 12px;font-size:12px;font-weight:300;color:var(--t1);width:100%;}
+.inp.placeholder{color:var(--t3);}
+.divider-line{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:11px;color:var(--t3);}
+.divider-line::before,.divider-line::after{content:'';flex:1;height:1px;background:var(--bn);}
+.profile-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.pcard{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rmd);padding:16px;cursor:pointer;transition:all 0.15s;}
+.pcard:hover{border-color:rgba(255,255,255,0.12);}
+.pcard.sel{background:rgba(74,222,128,0.06);border-color:var(--b2);}
+.pcard-icon{font-size:18px;margin-bottom:8px;}
+.pcard-title{font-size:13px;font-weight:400;color:var(--t1);margin-bottom:4px;}
+.pcard-desc{font-size:11px;font-weight:300;color:var(--t2);line-height:1.5;}
+.hint-text{font-size:11px;font-weight:300;color:var(--t3);text-align:center;margin-bottom:16px;line-height:1.5;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(74,222,128,0.035) 0%,transparent 40%);
+  border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;
+  min-height:100vh;
+  padding:20px 0;
+  position:sticky;top:0;height:100vh;
+}
+.sb-logo{padding:0 18px 22px;font-family:var(--fh);font-size:15px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:9px;letter-spacing:-0.01em;}
+.sb-mark{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--g200),var(--teal));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#000;flex-shrink:0;}
+.sb-section{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);padding:0 18px 6px;margin-top:10px;}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 18px;font-size:12.5px;font-weight:400;color:var(--t2);
+  cursor:pointer;margin:1px 8px;border-radius:var(--rsm);
+  transition:all 0.12s;position:relative;
+  border:1px solid transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,0.03);color:var(--t1);}
+.nav-item.active{background:rgba(74,222,128,0.07);color:var(--g300);border-color:var(--b1);}
+.nav-item.active::before{
+  content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  width:3px;height:14px;background:var(--g300);border-radius:0 2px 2px 0;
+  box-shadow:0 0 6px rgba(134,239,172,0.6);
+}
+.nav-icon{font-size:12px;width:14px;text-align:center;opacity:0.7;}
+.nav-badge{margin-left:auto;background:rgba(163,230,53,0.15);color:var(--g400);font-size:9px;font-weight:500;padding:1px 6px;border-radius:10px;font-family:var(--fm);border:1px solid rgba(163,230,53,0.2);}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--g300);flex-shrink:0;box-shadow:0 0 4px var(--g300);}
+
+/* ── TOGGLE ── */
+.toggle{margin:14px 12px 4px;background:var(--s1);border:1px solid var(--bn);border-radius:var(--rpill);padding:3px;display:flex;}
+.tog-opt{flex:1;text-align:center;padding:5px 8px;border-radius:var(--rpill);font-size:11px;font-weight:400;cursor:pointer;color:var(--t3);font-family:var(--fb);transition:all 0.2s;letter-spacing:0.01em;}
+.tog-opt.active{background:linear-gradient(135deg,var(--g200),var(--teal));color:#000;font-weight:500;box-shadow:0 0 12px rgba(74,222,128,0.2);}
+
+/* ── SIDEBAR BOTTOM ── */
+.sb-bottom{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--b1);}
+.user-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--rsm);cursor:pointer;transition:background 0.12s;}
+.user-row:hover{background:rgba(255,255,255,0.03);}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--g200),var(--teal));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#000;flex-shrink:0;}
+.u-name{font-size:12px;font-weight:400;color:var(--t1);}
+.u-role{font-size:10px;color:var(--t2);font-weight:300;}
+
+/* ── MAIN AREA ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* ── TOPBAR ── */
+.topbar{
+  height:52px;
+  background:rgba(15,19,15,0.8);
+  border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;padding:0 24px;gap:14px;
+  flex-shrink:0;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  position:sticky;top:0;z-index:10;
+}
+.breadcrumb{font-size:12px;font-weight:300;color:var(--t2);display:flex;align-items:center;gap:5px;letter-spacing:0.01em;}
+.breadcrumb .sep{color:var(--t3);}
+.breadcrumb strong{color:var(--t1);font-weight:400;}
+.breadcrumb a{color:var(--t2);cursor:pointer;transition:color 0.12s;}
+.breadcrumb a:hover{color:var(--t1);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.search-bar{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rpill);padding:5px 14px;font-size:11px;font-weight:300;color:var(--t2);width:176px;display:flex;align-items:center;gap:6px;transition:border-color 0.12s;cursor:text;}
+.search-bar:hover{border-color:rgba(255,255,255,0.12);}
+.search-icon{font-size:10px;opacity:0.5;}
+.icon-btn{width:28px;height:28px;background:var(--s2);border:1px solid var(--bn);border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;color:var(--t2);transition:all 0.12s;}
+.icon-btn:hover{border-color:rgba(255,255,255,0.12);color:var(--t1);}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:24px;overflow-y:auto;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+
+/* ── TYPOGRAPHY ── */
+.pg-h1{font-family:var(--fh);font-size:20px;font-weight:400;color:var(--t1);margin-bottom:3px;letter-spacing:-0.02em;}
+.pg-sub{font-size:12px;font-weight:300;color:var(--t2);margin-bottom:22px;letter-spacing:0.01em;}
+.sec-label{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.09em;text-transform:uppercase;color:var(--t2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:6px;}
+
+/* ── STAT CARDS ── */
+.card{background:linear-gradient(145deg,rgba(74,222,128,0.04) 0%,rgba(11,14,11,0) 100%);border:1px solid var(--b1);border-radius:var(--rlg);padding:16px;position:relative;overflow:hidden;}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(74,222,128,0.15),transparent);}
+.card-label{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.09em;text-transform:uppercase;color:var(--t2);margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.card-val{font-family:var(--fm);font-size:26px;font-weight:400;color:var(--t1);line-height:1;letter-spacing:-0.02em;}
+.card-val-text{font-family:var(--fh);font-size:17px;font-weight:400;color:var(--t1);margin-top:3px;letter-spacing:-0.02em;}
+.card-delta{font-size:11px;font-weight:300;margin-top:6px;color:var(--g300);letter-spacing:0.01em;}
+.card-delta.neg{color:var(--danger);}
+.card-delta.neu{color:var(--t2);}
+.prog{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:11px;}
+.prog-fill{height:100%;border-radius:2px;}
+
+/* ── PILLS ── */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:var(--rpill);font-family:var(--fb);font-size:10px;font-weight:400;letter-spacing:0.01em;}
+.pdot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.p-green{background:rgba(134,239,172,0.08);color:var(--g300);border:1px solid rgba(134,239,172,0.16);}
+.p-gold{background:rgba(252,211,77,0.08);color:var(--gold3);border:1px solid rgba(252,211,77,0.18);}
+.p-coral{background:rgba(248,113,113,0.08);color:var(--danger);border:1px solid rgba(248,113,113,0.16);}
+.p-teal{background:rgba(45,212,191,0.07);color:var(--teal);border:1px solid rgba(45,212,191,0.14);}
+.p-muted{background:rgba(122,133,120,0.08);color:var(--muted);border:1px solid rgba(122,133,120,0.16);}
+.p-active{background:rgba(74,222,128,0.07);color:var(--g200);border:1px solid rgba(74,222,128,0.14);}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:32px;border-radius:var(--rsm);font-family:var(--fb);font-size:12px;font-weight:400;cursor:pointer;border:none;white-space:nowrap;letter-spacing:0.01em;transition:all 0.15s;}
+.btn-primary{background:var(--g400);color:#000;}
+.btn-primary:hover{background:#b0f03e;}
+.btn-secondary{background:rgba(74,222,128,0.07);border:1px solid var(--b2);color:var(--g300);}
+.btn-secondary:hover{background:rgba(74,222,128,0.1);}
+.btn-ghost{background:transparent;border:1px solid var(--bn);color:var(--t2);}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.12);color:var(--t1);}
+
+/* ── GRIDS ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g21{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px;}
+
+/* ── CHART ── */
+.chart{display:flex;align-items:flex-end;gap:3px;height:52px;}
+.bar{flex:1;background:rgba(255,255,255,0.05);border-radius:2px 2px 0 0;}
+.bar-hi{background:linear-gradient(180deg,var(--g200),rgba(74,222,128,0.5));}
+.bar-med{background:rgba(134,239,172,0.25);}
+.bar-danger{background:rgba(248,113,113,0.6);}
+.chart-labels{display:flex;justify-content:space-between;margin-top:5px;}
+.chart-label{font-size:9px;color:var(--t3);font-family:var(--fm);}
+.chart-label.warn{color:var(--danger);}
+
+/* ── FEATURE ROW ── */
+.feat-row{background:linear-gradient(90deg,rgba(74,222,128,0.03) 0%,transparent 55%);border:1px solid var(--b1);border-radius:var(--rmd);padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.15s;}
+.feat-row:hover{border-color:var(--b2);background:linear-gradient(90deg,rgba(74,222,128,0.06) 0%,transparent 55%);}
+.hdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.fname{font-size:13px;font-weight:400;color:var(--t1);flex:1;letter-spacing:-0.01em;}
+.fmeta{font-size:11px;font-weight:300;color:var(--t2);flex-shrink:0;}
+
+/* ── INSIGHT PILL ── */
+.insight-pill{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--rpill);background:rgba(234,179,8,0.07);border:1px solid rgba(234,179,8,0.16);font-size:10px;font-weight:400;color:var(--gold3);max-width:260px;flex-shrink:0;}
+.insight-pill .ipdot{width:3px;height:3px;border-radius:50%;background:var(--gold3);flex-shrink:0;box-shadow:0 0 3px var(--gold5);}
+.insight-pill span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.view-link{font-size:11px;font-weight:400;color:var(--teal);flex-shrink:0;cursor:pointer;transition:color 0.12s;}
+.view-link:hover{color:#5ee8d8;}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--b1);border-radius:var(--rlg);overflow:hidden;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);background:rgba(9,12,9,0.6);}
+.tbl td{padding:11px 14px;font-size:12px;font-weight:300;color:var(--t1);border-bottom:1px solid rgba(74,222,128,0.04);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tbody tr{transition:background 0.12s;cursor:pointer;}
+.tbl tbody tr:hover td{background:rgba(74,222,128,0.02);}
+
+/* ── INSIGHT CARD ── */
+.ins-card{background:linear-gradient(145deg,rgba(234,179,8,0.06) 0%,rgba(11,14,11,0) 100%);border:1px solid rgba(234,179,8,0.16);border-radius:var(--rlg);padding:16px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
+.ins-card::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(234,179,8,0.25),transparent);}
+.ins-card:hover{border-color:rgba(234,179,8,0.28);}
+.ins-sig{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold3);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ins-sig::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold3);box-shadow:0 0 5px var(--gold5);flex-shrink:0;}
+.ins-text{font-size:13px;font-weight:300;color:var(--t1);line-height:1.65;margin-bottom:10px;}
+.ins-ev{font-family:var(--fm);font-size:10px;color:var(--t2);padding:6px 10px;background:rgba(255,255,255,0.025);border-left:2px solid rgba(234,179,8,0.4);border-radius:0 4px 4px 0;margin-bottom:10px;line-height:1.5;}
+.ins-foot{display:flex;align-items:center;justify-content:space-between;}
+.expand{font-size:11px;font-weight:400;color:var(--gold3);cursor:pointer;transition:color 0.12s;}
+.expand:hover{color:var(--gold5);}
+
+/* ── DESIGN LOG TIMELINE ── */
+.tl-item{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.tl-dot{width:26px;height:26px;border-radius:50%;background:var(--card2);border:1px solid var(--bn);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:10px;font-weight:500;color:var(--t2);flex-shrink:0;margin-top:14px;}
+.tl-dot.best{background:rgba(134,239,172,0.1);border-color:rgba(134,239,172,0.25);color:var(--g300);font-size:11px;}
+.tl-line{position:relative;}
+.tl-line::before{content:'';position:absolute;left:12px;top:40px;bottom:-14px;width:1px;background:var(--b1);}
+
+/* ── ALERT CARD ── */
+.alert-item{font-size:11px;padding:8px 10px;border-radius:var(--rsm);margin-bottom:6px;}
+.alert-danger{background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.12);}
+.alert-warn{background:rgba(252,211,77,0.04);border:1px solid rgba(252,211,77,0.12);}
+.alert-title{font-weight:500;margin-bottom:2px;}
+.alert-body{font-weight:300;color:var(--t2);}
+
+/* ── VS BLOCK ── */
+.vs-block{display:flex;align-items:center;justify-content:space-evenly;padding:8px 0;}
+.vs-side{text-align:center;}
+.vs-label{font-size:10px;color:var(--t2);margin-bottom:4px;font-family:var(--fm);}
+.vs-val{font-family:var(--fm);font-size:22px;font-weight:400;}
+.vs-arrow{color:var(--g300);font-size:16px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.filter-chip{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rsm);padding:5px 11px;font-size:11px;color:var(--t2);cursor:pointer;font-family:var(--fb);transition:all 0.12s;}
+.filter-chip:hover{border-color:rgba(255,255,255,0.12);color:var(--t1);}
+.filter-chip.active{background:rgba(74,222,128,0.07);border-color:var(--b2);color:var(--g300);}
+.filter-count{margin-left:auto;font-size:11px;color:var(--t2);font-family:var(--fm);}
+
+/* ── DESIGN LOG ROW ── */
+.log-row{background:var(--card);border:1px solid var(--b1);border-radius:var(--rmd);padding:12px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color 0.15s;margin-bottom:7px;}
+.log-row:hover{border-color:var(--b2);}
+.log-row-body{flex:1;}
+.log-row-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.log-row-name{font-size:13px;font-weight:400;color:var(--t1);letter-spacing:-0.01em;}
+.log-row-meta{font-size:11px;font-weight:300;color:var(--t2);}
+.log-row-stat{text-align:right;flex-shrink:0;}
+.log-row-count{font-size:11px;color:var(--t2);margin-bottom:2px;font-family:var(--fm);}
+.log-row-delta{font-size:12px;font-weight:400;}
+
+/* ── SIGNAL PILLARS ── */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.pillar{background:var(--card);border:1px solid var(--b1);border-radius:var(--rlg);padding:14px;position:relative;overflow:hidden;}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.pillar-trust::before{background:linear-gradient(90deg,var(--g200),transparent);}
+.pillar-tone::before{background:linear-gradient(90deg,var(--blue),transparent);}
+.pillar-density::before{background:linear-gradient(90deg,var(--gold3),transparent);}
+.pillar-pace::before{background:linear-gradient(90deg,var(--teal),transparent);}
+.pillar-label{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--t2);margin-bottom:8px;}
+.pillar-val{font-family:var(--fh);font-size:15px;font-weight:400;color:var(--t1);letter-spacing:-0.02em;}
+.pillar-trend{font-size:10px;font-weight:300;color:var(--t2);margin-top:5px;}
+
+/* ── INSIGHT EXPANDED ── */
+.ins-expanded{background:linear-gradient(145deg,rgba(234,179,8,0.06) 0%,rgba(11,14,11,0) 100%);border:1px solid rgba(234,179,8,0.2);border-radius:var(--rxl);padding:22px;position:relative;overflow:hidden;margin-bottom:14px;}
+.ins-expanded::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(234,179,8,0.35),transparent);}
+.ins-exp-sig{font-family:var(--fm);font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold3);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.ins-exp-sig::before{content:'✦';font-size:8px;}
+.ins-exp-title{font-family:var(--fh);font-size:18px;font-weight:400;color:var(--t1);letter-spacing:-0.02em;line-height:1.4;}
+.ins-divider{height:1px;background:rgba(234,179,8,0.1);margin:16px 0;}
+.ins-meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.ins-meta-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:var(--rsm);padding:10px;}
+.ins-meta-label{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--t2);margin-bottom:5px;}
+.ins-meta-val{font-family:var(--fm);font-size:16px;font-weight:400;color:var(--t1);}
+.ins-rec{background:rgba(234,179,8,0.04);border:1px solid rgba(234,179,8,0.12);border-radius:var(--rmd);padding:14px;margin-top:12px;}
+.ins-rec-label{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold3);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ins-rec-text{font-size:13px;font-weight:300;color:var(--t1);line-height:1.65;}
+
+/* ── SETTINGS FORM ── */
+.lbl{font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--t2);display:block;margin-bottom:5px;}
+.inp{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rsm);padding:9px 12px;font-size:12px;font-weight:300;color:var(--t1);width:100%;}
+.pcard{background:var(--s2);border:1px solid var(--bn);border-radius:var(--rmd);padding:16px;cursor:pointer;transition:all 0.15s;}
+.pcard:hover{border-color:rgba(255,255,255,0.12);}
+.pcard.sel{background:rgba(74,222,128,0.06);border-color:var(--b2);}
+.pcard-icon{font-size:18px;margin-bottom:8px;}
+.pcard-title{font-size:13px;font-weight:400;color:var(--t1);margin-bottom:4px;}
+.pcard-desc{font-size:11px;font-weight:300;color:var(--t2);line-height:1.5;}
+
+/* ── COMPONENT PREVIEW ── */
+.comp-preview{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rsm);height:68px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:10px;color:var(--t3);font-family:var(--fm);letter-spacing:0.05em;gap:8px;}
+.comp-preview.best{border-color:rgba(134,239,172,0.2);background:rgba(74,222,128,0.02);}
+</style>
+</head>
+<body>
+
+<div class="screens">
+
+<!-- ══════════ 01 — LOGIN ══════════ -->
+<div id="login" class="screen active">
+  <div class="login-screen">
+    <div class="login-left">
+      <div class="lf-wordmark">
+        <div class="sb-mark" style="width:38px;height:38px;font-size:15px;flex-shrink:0;">M</div>
+        Meridian
+      </div>
+      <div class="lf-tagline">Design performance intelligence for Product Managers and Designers</div>
+      <div class="lf-pills">
+        <span class="pill p-green">PM view</span>
+        <span class="pill p-teal">Designer view</span>
+        <span class="pill p-gold">AI insights</span>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="login-form">
+        <div class="lf-h2">Welcome back</div>
+        <div class="lf-sub">Sign in to your Meridian workspace</div>
+        <div class="field">
+          <label class="lbl">Work email</label>
+          <div class="inp placeholder"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="681a0700090628050d1a010c010906460107">[email&#160;protected]</a></div>
+        </div>
+        <div class="field">
+          <label class="lbl">Password</label>
+          <div class="inp placeholder" style="letter-spacing:0.28em;">••••••••</div>
+        </div>
+        <div class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="go('profile')">Continue →</div>
+        <div class="divider-line"><span>New to Meridian?</span></div>
+        <div class="btn btn-ghost" style="width:100%;justify-content:center;">Create an account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 02 — PROFILE SELECTION ══════════ -->
+<div id="profile" class="screen">
+  <div class="login-screen">
+    <div class="login-left">
+      <div class="lf-wordmark">
+        <div class="sb-mark" style="width:38px;height:38px;font-size:15px;flex-shrink:0;">M</div>
+        Meridian
+      </div>
+      <div class="lf-tagline">Design performance intelligence for Product Managers and Designers</div>
+    </div>
+    <div class="login-right">
+      <div class="login-form">
+        <div class="lf-h2">How are you using Meridian?</div>
+        <div class="lf-sub">Choose your primary role. You can switch anytime from the sidebar.</div>
+        <div class="profile-cards">
+          <div class="pcard" onclick="go('pm-dash')">
+            <div class="pcard-icon">📊</div>
+            <div class="pcard-title">Product Manager</div>
+            <div class="pcard-desc">Track KPIs and monitor feature performance</div>
+          </div>
+          <div class="pcard sel" onclick="go('ds-dash')">
+            <div class="pcard-icon">🎨</div>
+            <div class="pcard-title">Designer</div>
+            <div class="pcard-desc">Read design language insights and build evidence-based decisions</div>
+          </div>
+        </div>
+        <div class="hint-text">Switch views anytime using the PM · Designer toggle in the sidebar</div>
+        <div class="btn btn-primary" style="width:100%;justify-content:center;" onclick="go('pm-dash')">Enter Meridian →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 03 — PM DASHBOARD ══════════ -->
+<div id="pm-dash" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item" onclick="go('pm-tracker')"><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt active">PM</div>
+      <div class="tog-opt" onclick="go('ds-dash')">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">RM</div><div><div class="u-name">Rohan Mehta</div><div class="u-role">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Main <span class="sep">/</span> <strong>Dashboard</strong></div>
+      <div class="topbar-right">
+        <div class="search-bar"><span class="search-icon">⌕</span>Search features…</div>
+        <div class="icon-btn">🔔</div>
+        <div class="icon-btn">📅</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Welcome back, Rohan</div>
+      <div class="pg-sub">12 active features tracked · Last updated 2 hours ago</div>
+
+      <div class="g4">
+        <div class="card">
+          <div class="card-label">Features tracked</div>
+          <div class="card-val">12</div>
+          <div class="card-delta">↑ 3 this month</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Avg task completion</div>
+          <div class="card-val">84%</div>
+          <div class="card-delta">↑ +6% vs last sprint</div>
+          <div class="prog"><div class="prog-fill" style="width:84%;background:linear-gradient(90deg,var(--g200),var(--teal));"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Features with alerts</div>
+          <div class="card-val" style="color:var(--danger);">3</div>
+          <div class="card-delta neg">↓ Needs attention</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Insights generated</div>
+          <div class="card-val">28</div>
+          <div class="card-delta">↑ 7 this week</div>
+        </div>
+      </div>
+
+      <div class="g21">
+        <div class="card">
+          <div class="card-label">⚡ Active features</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;">
+            <div class="feat-row" onclick="go('pm-deepdive')">
+              <div class="hdot" style="background:var(--g200);box-shadow:0 0 5px rgba(74,222,128,0.6);"></div>
+              <div class="fname">Checkout Flow Redesign</div>
+              <span class="pill p-green"><span class="pdot" style="background:var(--g300);"></span>Healthy</span>
+              <span class="pill p-active">Active</span>
+              <div class="insight-pill"><span class="ipdot"></span><span>Trust — Confirmation copy drives 22% faster completion</span></div>
+              <span class="fmeta">12d ago</span>
+            </div>
+            <div class="feat-row">
+              <div class="hdot" style="background:var(--gold3);box-shadow:0 0 5px rgba(252,211,77,0.5);"></div>
+              <div class="fname">Onboarding v3</div>
+              <span class="pill p-gold"><span class="pdot" style="background:var(--gold3);"></span>Watch</span>
+              <span class="pill p-active">Active</span>
+              <div class="insight-pill"><span class="ipdot"></span><span>Tone — Formal copy cuts step completion by 18%</span></div>
+              <span class="fmeta">5d ago</span>
+            </div>
+            <div class="feat-row">
+              <div class="hdot" style="background:var(--danger);box-shadow:0 0 5px rgba(248,113,113,0.5);"></div>
+              <div class="fname">Dashboard Redesign</div>
+              <span class="pill p-coral"><span class="pdot" style="background:var(--danger);"></span>At risk</span>
+              <span class="pill p-active">Active</span>
+              <div class="insight-pill"><span class="ipdot"></span><span>Density — High density screens eroding trust</span></div>
+              <span class="fmeta">3d ago</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card">
+            <div class="card-label" style="color:var(--danger);">⚠ Recent alerts</div>
+            <div style="margin-top:6px;">
+              <div class="alert-item alert-danger">
+                <div class="alert-title" style="color:var(--danger);">Dashboard Redesign</div>
+                <div class="alert-body">Drop-off spike at step 2 — 34% exit rate</div>
+              </div>
+              <div class="alert-item alert-warn">
+                <div class="alert-title" style="color:var(--gold3);">Onboarding v3</div>
+                <div class="alert-body">Completion rate below baseline — 61% vs 74% target</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="flex:1;">
+            <div class="card-label">Weekly KPI trend</div>
+            <div class="chart" style="margin-top:8px;">
+              <div class="bar" style="height:40%"></div>
+              <div class="bar bar-med" style="height:55%"></div>
+              <div class="bar bar-med" style="height:48%"></div>
+              <div class="bar bar-hi" style="height:72%"></div>
+              <div class="bar bar-hi" style="height:84%"></div>
+              <div class="bar bar-med" style="height:60%"></div>
+              <div class="bar" style="height:38%"></div>
+            </div>
+            <div class="chart-labels">
+              <span class="chart-label">M</span><span class="chart-label">T</span><span class="chart-label">W</span><span class="chart-label">T</span><span class="chart-label">F</span><span class="chart-label">S</span><span class="chart-label">S</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 04 — PM FEATURE TRACKER ══════════ -->
+<div id="pm-tracker" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('pm-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt active">PM</div>
+      <div class="tog-opt" onclick="go('ds-tracker')">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">RM</div><div><div class="u-name">Rohan Mehta</div><div class="u-role">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Main <span class="sep">/</span> <strong>Feature Tracker</strong></div>
+      <div class="topbar-right">
+        <div class="search-bar"><span class="search-icon">⌕</span>Search features…</div>
+        <div class="icon-btn">🔔</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Feature Tracker</div>
+      <div class="pg-sub">12 features tracked · 8 active · 4 archived</div>
+
+      <div class="filter-bar">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip">Status ▾</div>
+        <div class="filter-chip">Signal type ▾</div>
+        <div class="filter-chip">Sort: Recently shipped ▾</div>
+        <div class="filter-count">12 features</div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Feature name</th><th>Shipped</th><th>Status</th><th>KPI health</th><th>Latest insight</th><th>Updated</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="go('pm-deepdive')">
+              <td style="font-weight:400;">Checkout Flow Redesign</td>
+              <td style="color:var(--t2);">12 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--g200);box-shadow:0 0 4px rgba(74,222,128,0.5);"></div><span style="color:var(--t2);">Healthy</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Trust — Confirmation copy drives 22% faster completion</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">2d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr onclick="go('pm-deepdive')">
+              <td style="font-weight:400;">Onboarding v3</td>
+              <td style="color:var(--t2);">5 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--gold3);box-shadow:0 0 4px rgba(252,211,77,0.5);"></div><span style="color:var(--t2);">Watch</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Tone — Formal copy cuts step completion by 18%</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">1d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr onclick="go('pm-deepdive')">
+              <td style="font-weight:400;">Dashboard Redesign</td>
+              <td style="color:var(--t2);">3 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--danger);box-shadow:0 0 4px rgba(248,113,113,0.5);"></div><span style="color:var(--danger);">At risk</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Density — High density screens eroding user trust</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">Today</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr>
+              <td style="font-weight:400;">Search UX Overhaul</td>
+              <td style="color:var(--t2);">18 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--g200);box-shadow:0 0 4px rgba(74,222,128,0.5);"></div><span style="color:var(--t2);">Healthy</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Pace — Users moving through steps at ideal speed</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">4d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr style="opacity:0.4;">
+              <td style="color:var(--t2);">Settings Revamp</td>
+              <td style="color:var(--t3);">45 days ago</td>
+              <td><span class="pill p-muted">Archived</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--muted);"></div><span style="color:var(--t3);">Archived</span></div></td>
+              <td><span class="pill p-muted" style="font-size:10px;">Pace — 30d ago</span></td>
+              <td style="color:var(--t3);font-family:var(--fm);font-size:11px;">30d ago</td>
+              <td><a style="font-size:11px;color:var(--t3);">View →</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 05 — PM DEEP-DIVE ══════════ -->
+<div id="pm-deepdive" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('pm-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt active">PM</div>
+      <div class="tog-opt" onclick="go('ds-deepdive')">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">RM</div><div><div class="u-name">Rohan Mehta</div><div class="u-role">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('pm-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <strong>Checkout Flow Redesign</strong>
+      </div>
+      <div class="topbar-right">
+        <div class="btn btn-secondary" onclick="go('ds-deepdive')" style="font-size:11px;padding:0 12px;height:28px;">Switch to Designer view →</div>
+        <span class="pill p-active">Active</span>
+        <div class="icon-btn">🔔</div>
+      </div>
+    </div>
+    <div class="content">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <div class="pg-h1" style="margin-bottom:5px;">Checkout Flow Redesign</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;font-weight:300;color:var(--t2);">v2.1 · Shipped Nov 28 · Payments team</span>
+            <span class="pill p-teal">Shipped</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="g3">
+        <div class="card">
+          <div class="card-label">Task completion rate</div>
+          <div class="card-val">84%</div>
+          <div class="card-delta">↑ +6% vs v1.0</div>
+          <div class="prog"><div class="prog-fill" style="width:84%;background:linear-gradient(90deg,var(--g300),var(--teal));"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Engagement rate</div>
+          <div class="card-val">71%</div>
+          <div class="card-delta">↑ +3% vs v1.0</div>
+          <div class="prog"><div class="prog-fill" style="width:71%;background:var(--teal);"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Conversion delta</div>
+          <div class="card-val" style="color:var(--g300);">+4.2%</div>
+          <div class="card-delta neu">Since ship · 12 days</div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="card">
+          <div class="card-label">Avg time on screen</div>
+          <div class="card-val" style="font-size:22px;">1m 42s</div>
+          <div class="card-delta">↓ 18s faster than v1.0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Drop-off by step</div>
+          <div class="chart" style="height:50px;margin-top:8px;">
+            <div class="bar bar-hi" style="height:90%"></div>
+            <div class="bar bar-hi" style="height:76%"></div>
+            <div class="bar bar-med" style="height:52%"></div>
+            <div class="bar bar-danger" style="height:26%"></div>
+          </div>
+          <div class="chart-labels">
+            <span class="chart-label">Step 1</span><span class="chart-label">Step 2</span><span class="chart-label">Step 3</span><span class="chart-label warn">⚠ Step 4</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">vs Previous version</div>
+          <div class="vs-block">
+            <div class="vs-side"><div class="vs-label">v1.0</div><div class="vs-val" style="color:var(--t2);">78%</div></div>
+            <div class="vs-arrow">→</div>
+            <div class="vs-side"><div class="vs-label" style="color:var(--g300);">v2.1 now</div><div class="vs-val" style="color:var(--g300);">84%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="border-color:rgba(45,212,191,0.16);margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="card-label" style="color:var(--teal);">◈ Design Log — Checkout Flow Redesign</div>
+          <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;" onclick="go('pm-designlog')">View full log →</div>
+        </div>
+        <div style="font-size:11px;font-weight:300;color:var(--t2);margin-bottom:10px;">8 components tracked · 24 iterations total</div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rsm);padding:9px 12px;">
+            <div style="font-size:10px;color:var(--t2);font-family:var(--fm);margin-bottom:3px;">Most improved</div>
+            <div style="font-size:12px;font-weight:400;color:var(--t1);">Primary CTA button</div>
+            <div style="font-size:11px;font-weight:300;color:var(--g300);margin-top:1px;">+12% task completion</div>
+          </div>
+          <div style="flex:1;background:var(--s2);border:1px solid rgba(252,211,77,0.12);border-radius:var(--rsm);padding:9px 12px;">
+            <div style="font-size:10px;color:var(--t2);font-family:var(--fm);margin-bottom:3px;">Needs iteration</div>
+            <div style="font-size:12px;font-weight:400;color:var(--t1);">Step 4 confirmation</div>
+            <div style="font-size:11px;font-weight:300;color:var(--gold3);margin-top:1px;">–34% drop-off unresolved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 06 — PM DESIGN LOG ══════════ -->
+<div id="pm-designlog" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('pm-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt active">PM</div>
+      <div class="tog-opt">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">RM</div><div><div class="u-name">Rohan Mehta</div><div class="u-role">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('pm-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <a onclick="go('pm-deepdive')">Checkout Flow</a>
+        <span class="sep">/</span>
+        <strong>Design Log</strong>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Design Log</div>
+      <div class="pg-sub">Checkout Flow Redesign · 8 components tracked · Last updated 2 days ago</div>
+      <div class="filter-bar">
+        <div class="filter-chip">Sort: Most improved ▾</div>
+        <div class="filter-chip">Filter by signal ▾</div>
+      </div>
+      <div style="display:flex;flex-direction:column;">
+        <div class="log-row" onclick="go('pm-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Primary CTA button</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: Bold label + confirmation microcopy increases trust</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">4 iterations</div><div class="log-row-delta" style="color:var(--g300);">+12% task completion</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('pm-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Step 4 confirmation screen</span><span class="pill p-gold">Needs iteration</span></div>
+            <div class="log-row-meta">Last hypothesis: Summary card reduces anxiety before final confirm</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">2 iterations</div><div class="log-row-delta" style="color:var(--gold3);">–34% drop-off unresolved</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('pm-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Form field layout</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: 3-field max per screen reduces cognitive load</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">3 iterations</div><div class="log-row-delta" style="color:var(--g300);">+8% completion rate</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('pm-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Progress indicator</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: Visible step count reduces drop-off at step 3</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">2 iterations</div><div class="log-row-delta" style="color:var(--g300);">+5% step 3 completion</div></div>
+          <a class="view-link">View →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 07 — PM LOG COMPONENT DETAIL ══════════ -->
+<div id="pm-logcomp" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('pm-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt active">PM</div>
+      <div class="tog-opt">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">RM</div><div><div class="u-name">Rohan Mehta</div><div class="u-role">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('pm-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <a onclick="go('pm-deepdive')">Checkout Flow</a>
+        <span class="sep">/</span>
+        <a onclick="go('pm-designlog')">Design Log</a>
+        <span class="sep">/</span>
+        <strong>Primary CTA button</strong>
+      </div>
+    </div>
+    <div class="content">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+        <div class="pg-h1" style="margin-bottom:0;">Primary CTA button</div>
+        <span class="pill p-green">Current best · v3</span>
+      </div>
+      <div class="pg-sub">4 iterations · Checkout Flow Redesign</div>
+
+      <div class="ins-card" style="margin-bottom:22px;cursor:default;">
+        <div class="card-label" style="color:var(--gold3);margin-bottom:6px;">✦ What the log tells us — AI generated</div>
+        <div style="font-size:13px;font-weight:300;color:var(--t1);line-height:1.65;">Across 4 iterations, confirmation language and label clarity were the two highest-leverage variables. Size and colour changes had negligible impact. Users want to know exactly what happens when they click — not just be told to click.</div>
+      </div>
+
+      <div class="tl-item tl-line">
+        <div class="tl-dot best">✓</div>
+        <div class="card" style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-green">v3 · Current best</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Dec 8, 2025 · Ananya K.</span>
+          </div>
+          <!-- v3 Best: Full CTA with trust microcopy -->
+          <div class="comp-preview best" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:var(--g400);color:#000;border:none;border-radius:var(--rsm);padding:0 24px;height:40px;font-family:var(--fb);font-size:13px;font-weight:500;cursor:default;width:220px;letter-spacing:0.01em;">Confirm payment →</button>
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:300;color:var(--g300);font-family:var(--fb);">
+              <span style="font-size:11px;">🔒</span> You're paying securely
+            </div>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">"You're paying securely" microcopy below button reduces trust anxiety at step 4</span></div>
+          <div style="font-size:12px;"><span style="color:var(--g300);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">Task completion +12% · Conversion delta +4.2% · Step 4 abandonment –22%</span></div>
+        </div>
+      </div>
+      <div class="tl-item tl-line">
+        <div class="tl-dot">2</div>
+        <div class="card" style="flex:1;opacity:0.72;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-muted">v2</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Nov 30, 2025 · Ananya K.</span>
+          </div>
+          <!-- v2: Larger button, no microcopy -->
+          <div class="comp-preview" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:var(--g400);color:#000;border:none;border-radius:var(--rsm);padding:0 24px;height:52px;font-family:var(--fb);font-size:15px;font-weight:500;cursor:default;width:260px;letter-spacing:0.01em;">Confirm payment →</button>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">Larger button size increases visibility and click-through on mobile</span></div>
+          <div style="font-size:12px;"><span style="color:var(--gold3);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">No significant change · Completion flat at 76% · No conversion impact</span></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">1</div>
+        <div class="card" style="flex:1;opacity:0.48;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-muted">v1 · Original</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Nov 22, 2025</span>
+          </div>
+          <!-- v1: Baseline plain button -->
+          <div class="comp-preview" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:rgba(74,222,128,0.15);color:var(--g300);border:1px solid var(--b2);border-radius:var(--rsm);padding:0 24px;height:40px;font-family:var(--fb);font-size:13px;font-weight:400;cursor:default;width:220px;">Pay now</button>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">Baseline — standard "Pay now" label, no supporting copy</span></div>
+          <div style="font-size:12px;"><span style="color:var(--danger);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">Task completion 72% · Step 4 abandonment 34% · Conversion baseline</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 08 — DESIGNER DASHBOARD ══════════ -->
+<div id="ds-dash" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item" onclick="go('ds-tracker')"><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" onclick="go('pm-dash')">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Main <span class="sep">/</span> <strong>Dashboard</strong></div>
+      <div class="topbar-right">
+        <div class="search-bar"><span class="search-icon">⌕</span>Search insights…</div>
+        <div class="icon-btn">🔔</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Welcome back, Ananya</div>
+      <div class="pg-sub">28 insights generated this month · Design language evolving</div>
+
+      <div class="pillars">
+        <div class="pillar pillar-trust">
+          <div class="pillar-label">Trust signals</div>
+          <div class="pillar-val">High demand</div>
+          <div class="pillar-trend" style="color:var(--danger);">↓ Drop in 2 features</div>
+        </div>
+        <div class="pillar pillar-tone">
+          <div class="pillar-label">Tone</div>
+          <div class="pillar-val">Conversational</div>
+          <div class="pillar-trend" style="color:var(--g300);">↑ Trending warmer</div>
+        </div>
+        <div class="pillar pillar-density">
+          <div class="pillar-label">Density</div>
+          <div class="pillar-val">Low density</div>
+          <div class="pillar-trend" style="color:var(--t2);">→ Stable</div>
+        </div>
+        <div class="pillar pillar-pace">
+          <div class="pillar-label">Pace</div>
+          <div class="pillar-val">Deliberate</div>
+          <div class="pillar-trend" style="color:var(--g300);">↑ Improving</div>
+        </div>
+      </div>
+
+      <div class="g21">
+        <div class="card">
+          <div class="card-label">✦ Recent insights</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+            <div class="ins-card" style="padding:11px;" onclick="go('ds-deepdive')">
+              <div class="ins-sig">Trust signal</div>
+              <div style="font-size:12px;font-weight:300;color:var(--t1);line-height:1.55;">Users complete checkout 22% faster when confirmation language is present at every step.</div>
+            </div>
+            <div class="ins-card" style="padding:11px;" onclick="go('ds-deepdive')">
+              <div class="ins-sig">Tone of interaction</div>
+              <div style="font-size:12px;font-weight:300;color:var(--t1);line-height:1.55;">Formal instructional language correlates with 18% lower step completion versus conversational alternatives.</div>
+            </div>
+            <div class="ins-card" style="padding:11px;" onclick="go('ds-deepdive')">
+              <div class="ins-sig">Density preference</div>
+              <div style="font-size:12px;font-weight:300;color:var(--t1);line-height:1.55;">Reduced information density on landing screen correlates with 11% higher return visit rate.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card">
+            <div class="card-label" style="color:var(--danger);">⚠ Needs design attention</div>
+            <div style="font-size:12px;font-weight:300;color:var(--t2);margin-bottom:8px;">Features where design signals are unclear or conflicting</div>
+            <div class="feat-row" style="padding:7px 10px;" onclick="go('ds-deepdive')">
+              <div class="hdot" style="background:var(--danger);box-shadow:0 0 4px rgba(248,113,113,0.5);"></div>
+              <div class="fname" style="font-size:12px;">Dashboard Redesign</div>
+              <span style="font-size:10px;font-weight:300;color:var(--t2);">Trust conflict</span>
+            </div>
+            <div class="feat-row" style="padding:7px 10px;margin-top:5px;">
+              <div class="hdot" style="background:var(--gold3);box-shadow:0 0 4px rgba(252,211,77,0.4);"></div>
+              <div class="fname" style="font-size:12px;">Onboarding v3</div>
+              <span style="font-size:10px;font-weight:300;color:var(--t2);">Tone mismatch</span>
+            </div>
+          </div>
+          <div class="ins-card" style="flex:1;cursor:default;">
+            <div class="card-label" style="color:var(--gold3);">✦ Design language summary</div>
+            <div style="font-size:12px;font-weight:300;color:var(--t2);line-height:1.75;font-style:italic;margin-top:4px;">"Your users want to feel guided, not managed. They respond best to warm, explicit language with visible confirmation at every step. High-density screens are quietly eroding trust."</div>
+            <div style="font-family:var(--fm);font-size:9px;color:var(--t3);margin-top:10px;letter-spacing:0.05em;">AI-generated · 28 insights · Last 30 days</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 09 — DESIGNER FEATURE TRACKER ══════════ -->
+<div id="ds-tracker" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('ds-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" onclick="go('pm-tracker')">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Main <span class="sep">/</span> <strong>Feature Tracker</strong></div>
+      <div class="topbar-right">
+        <div class="search-bar"><span class="search-icon">⌕</span>Search features…</div>
+        <div class="icon-btn">🔔</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Feature Tracker</div>
+      <div class="pg-sub">12 features tracked · 8 active · 4 archived</div>
+
+      <div class="filter-bar">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip">Status ▾</div>
+        <div class="filter-chip">Signal type ▾</div>
+        <div class="filter-chip">Sort: Recently shipped ▾</div>
+        <div class="filter-count">12 features</div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Feature name</th><th>Shipped</th><th>Status</th><th>Design health</th><th>Latest insight</th><th>Updated</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="go('ds-deepdive')">
+              <td style="font-weight:400;">Checkout Flow Redesign</td>
+              <td style="color:var(--t2);">12 days ago</td>
+              <td><span class="pill p-teal">Shipped</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--g200);box-shadow:0 0 4px rgba(74,222,128,0.5);"></div><span style="color:var(--t2);">Clear signals</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Trust — Confirmation copy drives 22% faster completion</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">2d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr onclick="go('ds-deepdive')">
+              <td style="font-weight:400;">Onboarding v3</td>
+              <td style="color:var(--t2);">5 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--gold3);box-shadow:0 0 4px rgba(252,211,77,0.4);"></div><span style="color:var(--t2);">Tone conflict</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Tone — Formal copy cuts step completion by 18%</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">1d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr onclick="go('ds-deepdive')">
+              <td style="font-weight:400;">Dashboard Redesign</td>
+              <td style="color:var(--t2);">3 days ago</td>
+              <td><span class="pill p-active">Active</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--danger);box-shadow:0 0 4px rgba(248,113,113,0.5);"></div><span style="color:var(--danger);">Trust eroding</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Density — High density screens eroding user trust</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">Today</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+            <tr>
+              <td style="font-weight:400;">Search UX Overhaul</td>
+              <td style="color:var(--t2);">18 days ago</td>
+              <td><span class="pill p-teal">Shipped</span></td>
+              <td><div style="display:flex;align-items:center;gap:6px;"><div class="hdot" style="background:var(--g200);box-shadow:0 0 4px rgba(74,222,128,0.5);"></div><span style="color:var(--t2);">Clear signals</span></div></td>
+              <td><div class="insight-pill" style="max-width:230px;"><span class="ipdot"></span><span>Pace — Users moving through steps at ideal speed</span></div></td>
+              <td style="color:var(--t2);font-family:var(--fm);font-size:11px;">4d ago</td>
+              <td><a class="view-link">View →</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 10 — DESIGNER DEEP-DIVE ══════════ -->
+<div id="ds-deepdive" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('ds-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" onclick="go('pm-deepdive')">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('ds-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <strong>Checkout Flow Redesign</strong>
+      </div>
+      <div class="topbar-right">
+        <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;" onclick="go('pm-deepdive')">← PM view</div>
+        <span class="pill p-teal">Shipped</span>
+      </div>
+    </div>
+    <div class="content">
+      <div style="margin-bottom:20px;">
+        <div class="pg-h1">Checkout Flow Redesign</div>
+        <div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;">v2.1 · Shipped Nov 28 · 3,200 sessions analysed</div>
+      </div>
+
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="ins-card" onclick="go('ds-insight')">
+          <div class="ins-sig">Trust signal</div>
+          <div class="ins-text">Users complete checkout 22% faster when confirmation language is present at every step of the flow.</div>
+          <div class="ins-ev">Based on: 3,200 sessions · 14-day window · Step 4 funnel analysis</div>
+          <div class="ins-foot"><span class="pill p-green">High confidence</span><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="go('ds-insight')">
+          <div class="ins-sig">Density preference</div>
+          <div class="ins-text">Screens with fewer than 4 interactive elements show 31% lower abandonment in the checkout flow.</div>
+          <div class="ins-ev">Based on: 3,200 sessions · Element count analysis · Step 2–4 comparison</div>
+          <div class="ins-foot"><span class="pill p-green">High confidence</span><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="go('ds-insight')">
+          <div class="ins-sig">Tone of interaction</div>
+          <div class="ins-text">Second-person, action-oriented microcopy ("You're almost there") outperforms imperative instructions at step 3.</div>
+          <div class="ins-ev">Based on: A/B test · 1,600 sessions per variant · 12-day window</div>
+          <div class="ins-foot"><span class="pill p-gold">Medium confidence</span><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="go('ds-insight')">
+          <div class="ins-sig">Pace</div>
+          <div class="ins-text">Users who reach step 3 complete at 91% — the bottleneck is entry to step 2, not progression.</div>
+          <div class="ins-ev">Based on: Funnel analysis · 3,200 sessions · Step-transition timing data</div>
+          <div class="ins-foot"><span class="pill p-green">High confidence</span><span class="expand">Expand →</span></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-color:rgba(45,212,191,0.16);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div class="card-label" style="color:var(--teal);">◈ Design Log</div>
+          <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;" onclick="go('ds-designlog')">View full log →</div>
+        </div>
+        <div style="font-size:11px;font-weight:300;color:var(--t2);">8 components tracked · 24 iterations total</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 11 — DESIGNER INSIGHT EXPANDED ══════════ -->
+<div id="ds-insight" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('ds-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('ds-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <a onclick="go('ds-deepdive')">Checkout Flow</a>
+        <span class="sep">/</span>
+        <strong>Trust signal</strong>
+      </div>
+      <div class="topbar-right">
+        <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;" onclick="go('ds-deepdive')">← Back to feature</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="ins-expanded">
+        <div>
+          <div class="ins-exp-sig">Trust signal</div>
+          <div class="ins-exp-title">Confirmation language drives 22% faster checkout completion</div>
+        </div>
+        <div class="ins-divider"></div>
+        <div class="ins-meta-grid">
+          <div class="ins-meta-item"><div class="ins-meta-label">Sessions analysed</div><div class="ins-meta-val">3,200</div></div>
+          <div class="ins-meta-item"><div class="ins-meta-label">Window</div><div class="ins-meta-val">14 days</div></div>
+          <div class="ins-meta-item"><div class="ins-meta-label">Confidence</div><div class="ins-meta-val" style="color:var(--g300);">High</div></div>
+        </div>
+        <div style="font-size:13px;font-weight:300;color:var(--t1);line-height:1.7;margin-bottom:14px;">
+          Users who encountered confirmation microcopy at each step of the checkout flow ("Your details are saved", "You're paying securely", "Almost done") completed the full flow 22% faster than those without it. Drop-off at step 4 — historically the weakest point — reduced from 34% to 12% in the variant with full confirmation coverage.
+        </div>
+        <div class="ins-ev" style="margin-bottom:0;">Step 4 funnel comparison · 3,200 sessions split across variant A (no microcopy) and variant B (full confirmation coverage)</div>
+        <div class="ins-rec">
+          <div class="ins-rec-label">✦ Design recommendation — AI generated</div>
+          <div class="ins-rec-text">Confirmation language should be treated as a structural requirement, not polish. Every step where a user commits an action — entering details, selecting an option, proceeding forward — needs a visible signal that the system has acknowledged their input and that the next step is safe. This is the highest-leverage intervention currently available for this flow.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <div class="btn btn-secondary" onclick="go('ds-designlog')">View Design Log →</div>
+        <div class="btn btn-ghost">Save to Insight Library</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 12 — DESIGNER DESIGN LOG ══════════ -->
+<div id="ds-designlog" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('ds-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('ds-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <a onclick="go('ds-deepdive')">Checkout Flow</a>
+        <span class="sep">/</span>
+        <strong>Design Log</strong>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Design Log</div>
+      <div class="pg-sub">Checkout Flow Redesign · 8 components tracked · Last updated 2 days ago</div>
+      <div class="filter-bar">
+        <div class="filter-chip">Sort: Most improved ▾</div>
+        <div class="filter-chip">Filter by signal ▾</div>
+        <div class="btn btn-ghost" style="margin-left:auto;font-size:11px;padding:0 12px;height:28px;">+ Add component</div>
+      </div>
+      <div style="display:flex;flex-direction:column;">
+        <div class="log-row" onclick="go('ds-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Primary CTA button</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: "You're paying securely" microcopy reduces trust anxiety</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">4 iterations</div><div class="log-row-delta" style="color:var(--g300);">+12% task completion</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('ds-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Step 4 confirmation screen</span><span class="pill p-gold">Needs iteration</span></div>
+            <div class="log-row-meta">Last hypothesis: Summary card reduces anxiety before final confirm</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">2 iterations</div><div class="log-row-delta" style="color:var(--gold3);">–34% drop-off unresolved</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('ds-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Form field layout</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: 3-field max per screen reduces cognitive load</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">3 iterations</div><div class="log-row-delta" style="color:var(--g300);">+8% completion rate</div></div>
+          <a class="view-link">View →</a>
+        </div>
+        <div class="log-row" onclick="go('ds-logcomp')">
+          <div class="log-row-body">
+            <div class="log-row-title"><span class="log-row-name">Progress indicator</span><span class="pill p-green">Current best</span></div>
+            <div class="log-row-meta">Last hypothesis: Visible step count reduces drop-off at step 3</div>
+          </div>
+          <div class="log-row-stat"><div class="log-row-count">2 iterations</div><div class="log-row-delta" style="color:var(--g300);">+5% step 3 completion</div></div>
+          <a class="view-link">View →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 13 — DESIGNER LOG COMPONENT DETAIL ══════════ -->
+<div id="ds-logcomp" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" onclick="go('ds-dash')"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚡</span>Feature Tracker</div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt">PM</div>
+      <div class="tog-opt active">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar">AK</div><div><div class="u-name">Ananya Kapoor</div><div class="u-role">Product Designer</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('ds-tracker')">Feature Tracker</a>
+        <span class="sep">/</span>
+        <a onclick="go('ds-deepdive')">Checkout Flow</a>
+        <span class="sep">/</span>
+        <a onclick="go('ds-designlog')">Design Log</a>
+        <span class="sep">/</span>
+        <strong>Primary CTA button</strong>
+      </div>
+    </div>
+    <div class="content">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+        <div class="pg-h1" style="margin-bottom:0;">Primary CTA button</div>
+        <span class="pill p-green">Current best · v3</span>
+      </div>
+      <div class="pg-sub">4 iterations · Checkout Flow Redesign</div>
+
+      <div class="ins-card" style="margin-bottom:22px;cursor:default;">
+        <div class="card-label" style="color:var(--gold3);margin-bottom:6px;">✦ What the log tells us — AI generated</div>
+        <div style="font-size:13px;font-weight:300;color:var(--t1);line-height:1.65;">Across 4 iterations, confirmation language and label clarity were the two highest-leverage variables. Size and colour changes had negligible impact. Users want to know exactly what happens when they click — not just be told to click.</div>
+      </div>
+
+      <div class="tl-item tl-line">
+        <div class="tl-dot best">✓</div>
+        <div class="card" style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-green">v3 · Current best</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Dec 8, 2025 · Ananya K.</span>
+          </div>
+          <!-- v3 Best: Full CTA with trust microcopy -->
+          <div class="comp-preview best" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:var(--g400);color:#000;border:none;border-radius:var(--rsm);padding:0 24px;height:40px;font-family:var(--fb);font-size:13px;font-weight:500;cursor:default;width:220px;letter-spacing:0.01em;">Confirm payment →</button>
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:300;color:var(--g300);font-family:var(--fb);">
+              <span style="font-size:11px;">🔒</span> You're paying securely
+            </div>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">"You're paying securely" microcopy below button reduces trust anxiety at step 4</span></div>
+          <div style="font-size:12px;"><span style="color:var(--g300);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">Task completion +12% · Conversion delta +4.2% · Step 4 abandonment –22%</span></div>
+        </div>
+      </div>
+      <div class="tl-item tl-line">
+        <div class="tl-dot">2</div>
+        <div class="card" style="flex:1;opacity:0.72;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-muted">v2</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Nov 30, 2025 · Ananya K.</span>
+          </div>
+          <!-- v2: Larger button, no microcopy -->
+          <div class="comp-preview" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:var(--g400);color:#000;border:none;border-radius:var(--rsm);padding:0 24px;height:52px;font-family:var(--fb);font-size:15px;font-weight:500;cursor:default;width:260px;letter-spacing:0.01em;">Confirm payment →</button>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">Larger button size increases visibility and click-through on mobile viewports</span></div>
+          <div style="font-size:12px;"><span style="color:var(--gold3);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">No significant change · Completion flat at 76% · No conversion impact</span></div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot">1</div>
+        <div class="card" style="flex:1;opacity:0.48;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span class="pill p-muted">v1 · Original</span>
+            <span style="font-size:11px;font-weight:300;color:var(--t2);">Nov 22, 2025</span>
+          </div>
+          <!-- v1: Baseline plain button -->
+          <div class="comp-preview" style="height:auto;flex-direction:column;gap:6px;padding:16px 20px;">
+            <button style="background:rgba(74,222,128,0.15);color:var(--g300);border:1px solid var(--b2);border-radius:var(--rsm);padding:0 24px;height:40px;font-family:var(--fb);font-size:13px;font-weight:400;cursor:default;width:220px;">Pay now</button>
+          </div>
+          <div style="font-size:12px;margin-bottom:6px;"><span style="color:var(--t2);font-weight:400;">Hypothesis:</span> <span style="font-weight:300;">Baseline — standard "Pay now" label, no supporting copy</span></div>
+          <div style="font-size:12px;"><span style="color:var(--danger);font-weight:400;">KPI outcome:</span> <span style="font-weight:300;">Task completion 72% · Step 4 abandonment 34% · Conversion baseline</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ INSIGHT LIBRARY ══════════ -->
+<div id="insight-library" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" id="il-nav-dash"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item" id="il-nav-tracker"><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item" onclick="go('settings')"><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" id="il-tog-pm">PM</div>
+      <div class="tog-opt" id="il-tog-ds">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar" id="il-avatar">RM</div><div><div class="u-name" id="il-uname">Rohan Mehta</div><div class="u-role" id="il-urole">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Main <span class="sep">/</span> <strong>Insight Library</strong></div>
+      <div class="topbar-right">
+        <div class="search-bar"><span class="search-icon">⌕</span>Search insights…</div>
+        <div class="icon-btn">🔔</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Insight Library</div>
+      <div class="pg-sub">28 insights saved · Across 4 features · Last 30 days</div>
+
+      <div class="g4" style="margin-bottom:20px;">
+        <div class="card"><div class="card-label">Total insights</div><div class="card-val">28</div><div class="card-delta">↑ 7 this week</div></div>
+        <div class="card"><div class="card-label">High confidence</div><div class="card-val">14</div><div class="card-delta">50% of library</div></div>
+        <div class="card"><div class="card-label">Trust signals</div><div class="card-val" style="color:var(--g300);">9</div><div class="card-delta">Most frequent signal</div></div>
+        <div class="card"><div class="card-label">Features covered</div><div class="card-val">4</div><div class="card-delta">Checkout · Onboarding · more</div></div>
+      </div>
+
+      <div class="filter-bar" style="margin-bottom:18px;">
+        <div class="filter-chip active">All signals</div>
+        <div class="filter-chip">Trust</div>
+        <div class="filter-chip">Tone</div>
+        <div class="filter-chip">Density</div>
+        <div class="filter-chip">Pace</div>
+        <div class="filter-count">28 insights</div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:12px;">Trust signals</div>
+      <div class="g2" style="margin-bottom:20px;">
+        <div class="ins-card" onclick="openInsightModal('trust1')">
+          <div class="ins-sig">Trust signal</div>
+          <div class="ins-text">Users complete checkout 22% faster when confirmation language is present at every step of the flow.</div>
+          <div class="ins-ev">3,200 sessions · 14-day window · Step 4 funnel analysis</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('trust2')">
+          <div class="ins-sig">Trust signal</div>
+          <div class="ins-text">Drop-off at step 4 reduced from 34% to 12% when explicit confirmation copy was added to the final screen.</div>
+          <div class="ins-ev">3,200 sessions · Variant B vs control · Step 4 exit rate</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('trust3')">
+          <div class="ins-sig">Trust signal</div>
+          <div class="ins-text">Dashboard Redesign shows an inverse trust pattern — high information density is correlated with 19% lower return visit rate.</div>
+          <div class="ins-ev">2,100 sessions · 7-day repeat visit analysis · Density scoring</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-gold">Medium confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Dashboard Redesign</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('trust4')">
+          <div class="ins-sig">Trust signal</div>
+          <div class="ins-text">Users who see a visible progress indicator across all 4 checkout steps abandon 15% less than those without it.</div>
+          <div class="ins-ev">2,800 sessions · Step visibility tracking · Funnel drop-off</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:12px;">Tone of interaction</div>
+      <div class="g2" style="margin-bottom:20px;">
+        <div class="ins-card" onclick="openInsightModal('tone1')">
+          <div class="ins-sig">Tone of interaction</div>
+          <div class="ins-text">Formal instructional language correlates with 18% lower step completion versus conversational alternatives across onboarding.</div>
+          <div class="ins-ev">1,600 sessions per variant · A/B copy test · 12-day window</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Onboarding v3</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('tone2')">
+          <div class="ins-sig">Tone of interaction</div>
+          <div class="ins-text">Second-person copy ("You're almost there") at step 3 yields 11% more completions versus imperative instructions.</div>
+          <div class="ins-ev">2,800 sessions · CTA hover dwell · Phrasing A/B</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:12px;">Density preference</div>
+      <div class="g2" style="margin-bottom:20px;">
+        <div class="ins-card" onclick="openInsightModal('density1')">
+          <div class="ins-sig">Density preference</div>
+          <div class="ins-text">Screens with fewer than 4 interactive elements show 31% lower abandonment in the checkout flow across all device types.</div>
+          <div class="ins-ev">3,200 sessions · Element count analysis · Step 2–4 comparison</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('density2')">
+          <div class="ins-sig">Density preference</div>
+          <div class="ins-text">Reduced information density on landing screen correlates with 11% higher return visit rate within 7 days of first visit.</div>
+          <div class="ins-ev">2,100 sessions · 7-day return cohort · Landing scroll depth</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-gold">Medium confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Dashboard Redesign</span></div><span class="expand">Expand →</span></div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:12px;">Pace</div>
+      <div class="g2">
+        <div class="ins-card" onclick="openInsightModal('pace1')">
+          <div class="ins-sig">Pace</div>
+          <div class="ins-text">Users who reach step 3 complete the flow at 91% — the bottleneck is entry to step 2, not forward progression once started.</div>
+          <div class="ins-ev">3,200 sessions · Funnel analysis · Step-transition timing data</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-green">High confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+        <div class="ins-card" onclick="openInsightModal('pace2')">
+          <div class="ins-sig">Pace</div>
+          <div class="ins-text">Users completing all 4 steps in under 90 seconds have a 94% success rate. Step 3 dwell is intentional, not a usability issue.</div>
+          <div class="ins-ev">2,950 sessions · Time-per-step analysis · Completion correlation</div>
+          <div class="ins-foot"><div style="display:flex;align-items:center;gap:6px;"><span class="pill p-teal">Medium confidence</span><span style="font-size:10px;font-weight:300;color:var(--t2);">Checkout Flow</span></div><span class="expand">Expand →</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Insight expanded modal -->
+<div id="insight-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);align-items:center;justify-content:center;z-index:500;">
+  <div style="background:var(--card);border:1px solid rgba(234,179,8,0.22);border-radius:16px;padding:28px;width:560px;max-width:90vw;position:relative;overflow:hidden;max-height:88vh;overflow-y:auto;">
+    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(234,179,8,0.4),transparent);"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold3);display:flex;align-items:center;gap:6px;margin-bottom:6px;" id="modal-sig">Trust signal</div>
+        <div style="font-family:var(--fh);font-size:17px;font-weight:400;color:var(--t1);letter-spacing:-0.02em;line-height:1.35;max-width:420px;" id="modal-title">Insight title</div>
+        <div style="font-size:11px;font-weight:300;color:var(--t2);margin-top:4px;" id="modal-meta">Feature · Date</div>
+      </div>
+      <div onclick="closeInsightModal()" style="color:var(--t2);cursor:pointer;font-size:16px;line-height:1;padding:4px;flex-shrink:0;">✕</div>
+    </div>
+    <div style="font-size:13px;font-weight:300;color:var(--t1);line-height:1.7;margin-bottom:16px;" id="modal-body">Body</div>
+    <div style="margin-bottom:14px;">
+      <div class="card-label" style="color:var(--t3);margin-bottom:8px;">Behavioural evidence</div>
+      <div id="modal-evidence"></div>
+    </div>
+    <div style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);border-radius:var(--rsm);padding:12px;margin-bottom:16px;">
+      <div class="card-label" style="color:var(--g300);margin-bottom:6px;">What this means for your design</div>
+      <div style="font-size:13px;font-weight:300;color:var(--t1);line-height:1.65;" id="modal-rec">Recommendation</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <span class="pill p-green" id="modal-conf">High confidence</span>
+      <span style="font-size:11px;font-weight:300;color:var(--t2);" id="modal-conf-desc">Based on 3,200+ sessions</span>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <div class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="closeInsightModal()">Close</div>
+      <div class="btn btn-secondary" style="flex:1;justify-content:center;" onclick="closeInsightModal()">Save to Library ✓</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<div id="settings" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" id="st-nav-dash"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item" id="st-nav-tracker"><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" id="st-tog-pm">PM</div>
+      <div class="tog-opt" id="st-tog-ds">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar" id="st-avatar">RM</div><div><div class="u-name" id="st-uname">Rohan Mehta</div><div class="u-role" id="st-urole">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">Account <span class="sep">/</span> <strong>Settings</strong></div>
+    </div>
+    <div class="content">
+      <div class="pg-h1">Settings</div>
+      <div class="pg-sub">Manage your workspace, integrations, and preferences</div>
+
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--b1);margin-bottom:24px;">
+        <div class="settings-tab active" onclick="switchSettingsTab('general',this)">General</div>
+        <div class="settings-tab" onclick="switchSettingsTab('integrations',this)">Integrations</div>
+        <div class="settings-tab" onclick="switchSettingsTab('notifications',this)">Notifications</div>
+        <div class="settings-tab" onclick="switchSettingsTab('team',this)">Team</div>
+      </div>
+
+      <div id="stab-general">
+        <div class="sec-label" style="margin-bottom:14px;">Workspace</div>
+        <div class="g2" style="margin-bottom:20px;">
+          <div class="card"><div class="card-label">Workspace name</div><div class="inp" style="margin-top:6px;font-size:12px;">Meridian · Payments Pod</div></div>
+          <div class="card"><div class="card-label">Default role on login</div><div style="display:flex;gap:8px;margin-top:8px;"><div class="filter-chip active">Product Manager</div><div class="filter-chip">Designer</div></div></div>
+        </div>
+        <div class="sec-label" style="margin-bottom:14px;">Profile</div>
+        <div class="g2" style="margin-bottom:20px;">
+          <div class="card"><div class="card-label">Display name</div><div class="inp" style="margin-top:6px;font-size:12px;" id="st-display-name">Rohan Mehta</div></div>
+          <div class="card"><div class="card-label">Email</div><div class="inp" style="margin-top:6px;font-size:12px;color:var(--t2);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a6875727b745a777f68737e737b74347375">[email&#160;protected]</a></div></div>
+        </div>
+        <div class="btn btn-primary" style="padding:0 20px;">Save changes</div>
+      </div>
+
+      <div id="stab-integrations" style="display:none;">
+        <div class="sec-label" style="margin-bottom:16px;">Connected integrations</div>
+        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="go('deploy-hook')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(163,230,53,0.1);border:1px solid rgba(163,230,53,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔗</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">Deploy Hook</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Automatically trigger KPI snapshot on each deploy</div></div>
+            <span class="pill p-green">Connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Configure →</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="openIntegrationDialog('figma')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.18);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">✦</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">Figma Plugin</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Sync component versions directly from Figma into Design Log</div></div>
+            <span class="pill p-green">Connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Configure →</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="openIntegrationDialog('amplitude')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.16);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">📊</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">Amplitude</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Pull KPI events and funnel data into Feature Tracker</div></div>
+            <span class="pill p-green">Connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Configure →</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="openIntegrationDialog('mixpanel')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(252,211,77,0.08);border:1px solid rgba(252,211,77,0.14);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⚡</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">Mixpanel</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Event tracking and cohort analysis for feature insights</div></div>
+            <span class="pill p-muted">Not connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Connect →</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:10px;cursor:pointer;" onclick="openIntegrationDialog('fullstory')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.14);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🎥</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">FullStory</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Session recordings to validate design hypotheses</div></div>
+            <span class="pill p-muted">Not connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Connect →</span>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="openIntegrationDialog('segment')">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:38px;height:38px;border-radius:var(--rsm);background:rgba(134,239,172,0.07);border:1px solid rgba(134,239,172,0.14);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">◈</div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:400;color:var(--t1);margin-bottom:2px;">Segment</div><div style="font-size:11px;font-weight:300;color:var(--t2);">Unified data pipeline — route events to all downstream tools</div></div>
+            <span class="pill p-green">Connected</span>
+            <span style="font-size:11px;color:var(--teal);cursor:pointer;">Configure →</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="stab-notifications" style="display:none;">
+        <div class="sec-label" style="margin-bottom:16px;">Alert preferences</div>
+        <div class="g2">
+          <div class="card"><div class="card-label">KPI drop alerts</div><div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;margin-bottom:10px;">Notify when task completion drops below threshold</div><div class="filter-chip active" style="display:inline-block;">Enabled</div></div>
+          <div class="card"><div class="card-label">New insight generated</div><div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;margin-bottom:10px;">Get notified when AI generates a new insight</div><div class="filter-chip active" style="display:inline-block;">Enabled</div></div>
+          <div class="card"><div class="card-label">Deploy hook triggered</div><div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;margin-bottom:10px;">Notify on every successful KPI snapshot</div><div class="filter-chip" style="display:inline-block;">Disabled</div></div>
+          <div class="card"><div class="card-label">Weekly digest</div><div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;margin-bottom:10px;">Summary of insights and KPI changes each Friday</div><div class="filter-chip active" style="display:inline-block;">Enabled</div></div>
+        </div>
+      </div>
+
+      <div id="stab-team" style="display:none;">
+        <div class="sec-label" style="margin-bottom:16px;">Workspace members</div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Role</th><th>Last active</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:400;">Rohan Mehta</td><td style="color:var(--t2);">Product Manager</td><td style="color:var(--t2);">Today</td><td><span class="pill p-green">Active</span></td></tr>
+              <tr><td style="font-weight:400;">Ananya Kapoor</td><td style="color:var(--t2);">Product Designer</td><td style="color:var(--t2);">Today</td><td><span class="pill p-green">Active</span></td></tr>
+              <tr><td style="font-weight:400;">Karan Sethi</td><td style="color:var(--t2);">Product Manager</td><td style="color:var(--t2);">2d ago</td><td><span class="pill p-green">Active</span></td></tr>
+              <tr><td style="font-weight:400;">Priya Nair</td><td style="color:var(--t2);">Product Designer</td><td style="color:var(--t2);">5d ago</td><td><span class="pill p-muted">Inactive</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="btn btn-secondary" style="margin-top:14px;">+ Invite member</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DEPLOY HOOK ══════════ -->
+<div id="deploy-hook" class="screen">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-mark">M</div>Meridian</div>
+    <div class="sb-section">Main</div>
+    <div class="nav-item" id="dh-nav-dash"><span class="nav-icon">⊞</span>Dashboard</div>
+    <div class="nav-item" id="dh-nav-tracker"><span class="nav-icon">⚡</span>Feature Tracker<span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="go('insight-library')"><span class="nav-icon">◈</span>Insight Library</div>
+    <div class="sb-section" style="margin-top:8px;">Account</div>
+    <div class="nav-item active"><span class="nav-dot"></span><span class="nav-icon">⚙</span>Settings</div>
+    <div class="toggle">
+      <div class="tog-opt" id="dh-tog-pm">PM</div>
+      <div class="tog-opt" id="dh-tog-ds">Designer</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="user-row"><div class="avatar" id="dh-avatar">RM</div><div><div class="u-name" id="dh-uname">Rohan Mehta</div><div class="u-role" id="dh-urole">Product Manager</div></div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a onclick="go('settings');setTimeout(function(){switchSettingsTab('integrations',null);},50)">Settings</a>
+        <span class="sep">/</span>
+        <a onclick="go('settings');setTimeout(function(){switchSettingsTab('integrations',null);},50)">Integrations</a>
+        <span class="sep">/</span>
+        <strong>Deploy Hook</strong>
+      </div>
+      <div class="topbar-right"><span class="pill p-green">Active</span></div>
+    </div>
+    <div class="content">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+        <div><div class="pg-h1">Deploy Hook</div><div class="pg-sub">Automatically snapshot KPIs when you deploy a new version</div></div>
+        <span class="pill p-green" style="margin-top:6px;">Connected · Last triggered 2h ago</span>
+      </div>
+
+      <div class="g2" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-label">Webhook URL</div>
+          <div style="background:var(--s2);border:1px solid var(--bn);border-radius:var(--rsm);padding:9px 12px;font-family:var(--fm);font-size:11px;color:var(--t2);margin-top:8px;word-break:break-all;letter-spacing:0.01em;">https://hooks.meridian.io/deploy/<span style="color:var(--teal);">xk9p2m·••••••••</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;">Copy URL</div>
+            <div class="btn btn-ghost" style="font-size:11px;padding:0 12px;height:28px;">Regenerate</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Snapshot trigger</div>
+          <div style="font-size:12px;font-weight:300;color:var(--t2);margin-top:4px;margin-bottom:10px;">What gets recorded each time the hook fires</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:300;"><span style="color:var(--g300);">✓</span>Task completion rate</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:300;"><span style="color:var(--g300);">✓</span>Engagement rate</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:300;"><span style="color:var(--g300);">✓</span>Conversion delta</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:300;color:var(--t3);">○ Drop-off by step (optional)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-bottom:14px;">Recent deploys</div>
+      <div class="tbl-wrap" style="margin-bottom:20px;">
+        <table class="tbl">
+          <thead><tr><th>Version</th><th>Triggered by</th><th>Time</th><th>KPI snapshot</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:400;font-family:var(--fm);font-size:11px;">v2.1.4</td><td style="color:var(--t2);">GitHub CI · main branch</td><td style="color:var(--t2);font-family:var(--fm);font-size:11px;">2h ago</td><td><span style="font-size:11px;color:var(--g300);">84% completion · +4.2% conv.</span></td><td><span class="pill p-green">Success</span></td></tr>
+            <tr><td style="font-weight:400;font-family:var(--fm);font-size:11px;">v2.1.3</td><td style="color:var(--t2);">GitHub CI · main branch</td><td style="color:var(--t2);font-family:var(--fm);font-size:11px;">1d ago</td><td><span style="font-size:11px;color:var(--t2);">82% completion · +3.8% conv.</span></td><td><span class="pill p-green">Success</span></td></tr>
+            <tr><td style="font-weight:400;font-family:var(--fm);font-size:11px;">v2.1.2</td><td style="color:var(--t2);">GitHub CI · main branch</td><td style="color:var(--t2);font-family:var(--fm);font-size:11px;">3d ago</td><td><span style="font-size:11px;color:var(--t2);">80% completion · +2.1% conv.</span></td><td><span class="pill p-green">Success</span></td></tr>
+            <tr><td style="font-weight:400;font-family:var(--fm);font-size:11px;">v2.1.1</td><td style="color:var(--t2);">Manual trigger</td><td style="color:var(--t2);font-family:var(--fm);font-size:11px;">5d ago</td><td><span style="font-size:11px;color:var(--danger);">Snapshot failed — timeout</span></td><td><span class="pill p-coral">Failed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="btn btn-secondary" onclick="go('settings');setTimeout(function(){switchSettingsTab('integrations',null);},50)">← Back to integrations</div>
+        <div class="btn btn-ghost">Test hook</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end screens -->
+
+<!-- Integration dialog -->
+<div id="integration-dialog" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);align-items:center;justify-content:center;z-index:500;">
+  <div style="background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:26px;width:480px;max-width:90vw;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(74,222,128,0.25),transparent);"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">
+      <div><div style="font-family:var(--fh);font-size:16px;font-weight:400;color:var(--t1);" id="int-title">Integration</div><div style="font-size:11px;font-weight:300;color:var(--t2);margin-top:3px;" id="int-sub">Configure your connection</div></div>
+      <div onclick="closeIntegrationDialog()" style="color:var(--t2);cursor:pointer;font-size:16px;padding:4px;">✕</div>
+    </div>
+    <div id="int-body"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <div class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="closeIntegrationDialog()">Cancel</div>
+      <div class="btn btn-primary" style="flex:1;justify-content:center;" onclick="closeIntegrationDialog()">Save changes</div>
+    </div>
+  </div>
+</div>
+
+<style>
+.settings-tab{padding:10px 16px;font-size:12px;font-weight:400;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.12s;}
+.settings-tab:hover{color:var(--t1);}
+.settings-tab.active{color:var(--g300);border-bottom-color:var(--g300);}
+</style>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var currentRole = 'pm';
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  updateSharedSidebars(id);
+  if (['pm-dash','pm-tracker','pm-deepdive','pm-designlog','pm-logcomp'].indexOf(id) !== -1) currentRole = 'pm';
+  if (['ds-dash','ds-tracker','ds-deepdive','ds-insight','ds-designlog','ds-logcomp'].indexOf(id) !== -1) currentRole = 'ds';
+}
+
+function updateSharedSidebars(id) {
+  var isPM = currentRole === 'pm';
+  var shared = ['insight-library','settings','deploy-hook'];
+  if (shared.indexOf(id) === -1) return;
+  var prefixes = {
+    'insight-library':'il','settings':'st','deploy-hook':'dh'
+  };
+  var p = prefixes[id];
+  if (!p) return;
+  var pmEl = document.getElementById(p+'-tog-pm');
+  var dsEl = document.getElementById(p+'-tog-ds');
+  if (pmEl) pmEl.className = 'tog-opt'+(isPM?' active':'');
+  if (dsEl) dsEl.className = 'tog-opt'+(!isPM?' active':'');
+  if (pmEl) pmEl.onclick = function(){ go('pm-dash'); };
+  if (dsEl) dsEl.onclick = function(){ go('ds-dash'); };
+  var dashEl = document.getElementById(p+'-nav-dash');
+  var trackerEl = document.getElementById(p+'-nav-tracker');
+  if (dashEl) dashEl.onclick = function(){ go(isPM?'pm-dash':'ds-dash'); };
+  if (trackerEl) trackerEl.onclick = function(){ go(isPM?'pm-tracker':'ds-tracker'); };
+  var av = document.getElementById(p+'-avatar');
+  var un = document.getElementById(p+'-uname');
+  var ur = document.getElementById(p+'-urole');
+  if (av) av.textContent = isPM?'RM':'AK';
+  if (un) un.textContent = isPM?'Rohan Mehta':'Ananya Kapoor';
+  if (ur) ur.textContent = isPM?'Product Manager':'Product Designer';
+  if (id === 'settings') {
+    var dn = document.getElementById('st-display-name');
+    if (dn) dn.textContent = isPM?'Rohan Mehta':'Ananya Kapoor';
+  }
+}
+
+function switchSettingsTab(tab, el) {
+  ['general','integrations','notifications','team'].forEach(function(t){
+    var el2 = document.getElementById('stab-'+t);
+    if (el2) el2.style.display = (t===tab)?'':'none';
+  });
+  document.querySelectorAll('.settings-tab').forEach(function(t){ t.classList.remove('active'); });
+  if (el) {
+    el.classList.add('active');
+  } else {
+    document.querySelectorAll('.settings-tab').forEach(function(t){
+      if (t.textContent.toLowerCase().trim()===tab) t.classList.add('active');
+    });
+  }
+}
+
+var integrationData = {
+  figma:{title:'Figma Plugin',sub:'Sync component versions into Design Log',body:'<div class="card-label" style="margin-bottom:8px;">Plugin status</div><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--s2);padding:10px 12px;border-radius:var(--rsm);border:1px solid var(--b1);"><span style="font-size:18px;">✦</span><div><div style="font-size:12px;font-weight:400;">Figma for Meridian v1.4.2</div><div style="font-size:11px;color:var(--t2);font-weight:300;">Installed · 3 files connected</div></div><span class="pill p-green" style="margin-left:auto;">Active</span></div><div class="card-label" style="margin-bottom:8px;">Sync settings</div><div style="font-size:12px;font-weight:300;color:var(--t2);margin-bottom:8px;">Auto-sync component snapshots on frame publish</div><div style="display:flex;gap:8px;"><div class="filter-chip active">On publish</div><div class="filter-chip">Manual only</div></div>'},
+  amplitude:{title:'Amplitude',sub:'Pull KPI events and funnel data into Feature Tracker',body:'<div class="card-label" style="margin-bottom:8px;">API key</div><div class="inp" style="font-family:var(--fm);font-size:11px;color:var(--t2);letter-spacing:0.05em;margin-bottom:12px;">amp_k9••••••••••••••••••</div><div class="card-label" style="margin-bottom:8px;">Events synced</div><div style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:300;"><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--g300);">✓</span>checkout_complete</div><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--g300);">✓</span>checkout_step_viewed</div><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--g300);">✓</span>checkout_abandoned</div></div>'},
+  mixpanel:{title:'Mixpanel',sub:'Connect Mixpanel to unlock event tracking insights',body:'<div class="card-label" style="margin-bottom:8px;">Project token</div><div class="inp" style="font-family:var(--fm);font-size:11px;color:var(--t3);margin-bottom:12px;letter-spacing:0.03em;">Paste your Mixpanel project token…</div><div style="font-size:12px;font-weight:300;color:var(--t2);line-height:1.6;">Once connected, Meridian will pull funnel events and cohort data automatically. No code required — uses the Mixpanel Data Export API.</div>'},
+  fullstory:{title:'FullStory',sub:'Connect session recordings to validate design hypotheses',body:'<div class="card-label" style="margin-bottom:8px;">ORG ID</div><div class="inp" style="font-family:var(--fm);font-size:11px;color:var(--t3);margin-bottom:12px;letter-spacing:0.03em;">Paste your FullStory ORG ID…</div><div style="font-size:12px;font-weight:300;color:var(--t2);line-height:1.6;">Surface relevant session replays directly from Design Log entries. Meridian will automatically link recordings that match the time window of each component iteration.</div>'},
+  segment:{title:'Segment',sub:'Unified data pipeline connected',body:'<div class="card-label" style="margin-bottom:8px;">Write key</div><div class="inp" style="font-family:var(--fm);font-size:11px;color:var(--t2);letter-spacing:0.05em;margin-bottom:12px;">seg_wk9p••••••••••••</div><div class="card-label" style="margin-bottom:8px;">Destinations routing through Segment</div><div style="display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:300;"><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--g300);">✓</span>Amplitude</div><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--g300);">✓</span>Google Analytics 4</div><div style="display:flex;align-items:center;gap:8px;color:var(--t3);">○ Mixpanel (not connected)</div></div>'}
+};
+function openIntegrationDialog(key) {
+  var d = integrationData[key]||{title:'Integration',sub:'Configure',body:''};
+  document.getElementById('int-title').textContent = d.title;
+  document.getElementById('int-sub').textContent = d.sub;
+  document.getElementById('int-body').innerHTML = d.body;
+  document.getElementById('integration-dialog').style.display = 'flex';
+}
+function closeIntegrationDialog() {
+  document.getElementById('integration-dialog').style.display = 'none';
+}
+
+var insightData = {
+  trust1:{sig:'Trust signal',title:'Confirmation language drives 22% faster checkout completion',meta:'Checkout Flow Redesign · Dec 10, 2025',body:'Users who encountered confirmation microcopy at each step ("Your details are saved", "You\'re paying securely", "Almost done") completed the full flow 22% faster. Drop-off at step 4 reduced from 34% to 12% in the full confirmation variant.',evidence:['3,200 sessions analysed · 14-day window · Step 4 funnel','34% exit rate at step 4 vs 8% average across steps 1–3','Sessions with 4s+ dwell on step 4 show 89% completion'],rec:'Confirmation language should be treated as a structural requirement, not polish. Every step where a user commits an action needs a visible signal that the system has acknowledged their input.',conf:'High confidence',confDesc:'Based on 3,200+ sessions over 14 days'},
+  trust2:{sig:'Trust signal',title:'Full confirmation coverage reduces step 4 drop-off from 34% to 12%',meta:'Checkout Flow Redesign · Dec 8, 2025',body:'Adding explicit confirmation copy to each step cut step 4 abandonment by 22 percentage points. The effect was strongest at step 4, where users historically showed the most hesitation before final payment confirmation.',evidence:['3,200 sessions · Variant B (full confirmation) vs control','Step 4 exit rate: control 34% → variant 12%','Conversion uplift: +4.2% in variant B'],rec:'Step 4 is the highest-risk moment in the flow. A summary card showing entered details plus a "You\'re paying securely" signal before the final CTA is the highest-leverage intervention available.',conf:'High confidence',confDesc:'Based on 3,200+ sessions — statistically significant'},
+  trust3:{sig:'Trust signal',title:'High density in Dashboard Redesign is eroding trust',meta:'Dashboard Redesign · Dec 5, 2025',body:'Sessions on the Dashboard Redesign screens show a 19% lower 7-day return rate compared to users who first land on lower-density screens. The pattern holds across device types and session lengths.',evidence:['2,100 sessions · 7-day return cohort · Density scoring','High-density screens: 61% return rate vs 80% for low-density','Pattern consistent across mobile and desktop'],rec:'Prioritise information hierarchy over completeness. Show the most critical KPIs above the fold and progressively disclose secondary data. Users should orient in under 3 seconds.',conf:'Medium confidence',confDesc:'Based on 2,100 sessions — further validation recommended'},
+  trust4:{sig:'Trust signal',title:'Progress indicator visibility reduces abandonment by 15%',meta:'Checkout Flow Redesign · Dec 3, 2025',body:'Users who could see a persistent progress indicator across all 4 checkout steps abandoned the flow 15% less. The effect was strongest at step 3, where many users previously exited without indication of how close they were to completing.',evidence:['2,800 sessions · Step visibility tracking · Funnel drop-off','Step 3 abandonment: 28% without indicator → 13% with','Mobile users showed the strongest response (+19%)'],rec:'The progress indicator is not decorative — it directly communicates that effort has a defined end. Ensure it is visible without scrolling on all viewport sizes.',conf:'High confidence',confDesc:'Based on 2,800 sessions over 10 days'},
+  tone1:{sig:'Tone of interaction',title:'Formal copy in Onboarding v3 is cutting step completion by 18%',meta:'Onboarding v3 · Dec 6, 2025',body:'Instructional, imperative copy shows an 18% lower step completion rate versus conversational alternatives in A/B testing across the onboarding flow.',evidence:['1,600 sessions per variant · A/B copy test · 12-day window','Imperative: 61% step completion vs conversational: 72%','Effect size largest at steps 1 and 3 (decision points)'],rec:'Shift the default voice from instructional to conversational throughout onboarding. Users are more likely to complete steps that feel like a dialogue than steps that feel like a form.',conf:'High confidence',confDesc:'Based on 3,200 sessions split across two copy variants'},
+  tone2:{sig:'Tone of interaction',title:'Second-person copy at step 3 yields 11% more completions',meta:'Checkout Flow Redesign · Dec 2, 2025',body:'Variants using second-person, action-oriented microcopy ("You\'re almost there — just one more step") outperformed imperative alternatives ("Complete step 3") by 11% in step completion rate.',evidence:['2,800 sessions · CTA hover dwell analysis · Phrasing A/B','Second-person: 84% completion vs imperative: 73% at step 3','Hover dwell 0.8s longer on second-person CTAs (intent signal)'],rec:'Default to second-person voice for all mid-flow copy. The user should feel like the product is talking to them personally, not issuing instructions. Apply consistently.',conf:'High confidence',confDesc:'Based on 2,800 sessions across 3 phrasing variants'},
+  density1:{sig:'Density preference',title:'Fewer than 4 interactive elements per screen reduces abandonment by 31%',meta:'Checkout Flow Redesign · Nov 30, 2025',body:'Across all 4 checkout steps, screens with 3 or fewer visible interactive elements show 31% lower abandonment rates than screens with 4 or more.',evidence:['3,200 sessions · Element count analysis · Step 2–4 comparison','4+ elements: 34% step abandonment vs 3 or fewer: 23%','Scroll-depth data confirms users scan entire screen before acting'],rec:'Apply a maximum of 3 interactive elements per screen as a design constraint, not a suggestion. If information cannot be removed, consider progressive disclosure.',conf:'High confidence',confDesc:'Based on 3,200 sessions — pattern consistent across devices'},
+  density2:{sig:'Density preference',title:'Lower landing density correlates with 11% higher 7-day return rate',meta:'Dashboard Redesign · Nov 28, 2025',body:'Users who land on lower-density versions of the dashboard return within 7 days at an 11% higher rate than those landing on denser variants. The effect is stronger for new users.',evidence:['2,100 sessions · 7-day return cohort · Landing scroll depth','Low density landing: 80% return vs high density: 69% (7-day)','New user effect stronger: +17% return for low-density first session'],rec:'Treat the landing state as a trust-building moment, not a data delivery moment. New users especially need to feel the product is comprehensible before they invest time in it.',conf:'Medium confidence',confDesc:'Based on 2,100 sessions — further validation with new cohort recommended'},
+  pace1:{sig:'Pace',title:'Step 3 completion at 91% — the bottleneck is step 2 entry, not progression',meta:'Checkout Flow Redesign · Nov 26, 2025',body:'Users who reach step 3 complete the full flow at 91%. The real bottleneck is the transition from step 1 to step 2, where 34% of users exit. This is a trust and readiness issue at the entry point, not a form complexity issue.',evidence:['3,200 sessions · Funnel analysis · Step-transition timing','Step 1→2 transition: 66% proceed · Biggest drop in flow','Step 3→4 completion: 91% of users who reach step 3 complete'],rec:'Focus design effort on the step 1→2 transition, not step 3. Consider adding a reassurance element (security indicator, time estimate) before users commit to entering payment details.',conf:'High confidence',confDesc:'Based on 3,200 sessions — funnel data clean and consistent'},
+  pace2:{sig:'Pace',title:'Users under 90 seconds have a 94% success rate — step 3 dwell is intentional',meta:'Checkout Flow Redesign · Nov 24, 2025',body:'Users who complete all 4 steps in under 90 seconds succeed at 94%. Step 3 shows higher average dwell time (28s) than other steps — but this correlates with higher completion, not lower. Users are reading carefully, not getting confused.',evidence:['2,950 sessions · Time-per-step analysis · Completion correlation','Sub-90s sessions: 94% success rate vs 71% for 90s+','Step 3 avg dwell 28s vs 12s for steps 1, 2, 4 — positive signal'],rec:'Do not reduce content at step 3. The dwell time indicates users are reading the payment summary carefully, which is healthy behaviour. Optimise step 2 entry speed instead.',conf:'Medium confidence',confDesc:'Based on 2,950 sessions · Timing methodology to be validated'}
+};
+function openInsightModal(key) {
+  var d = insightData[key]; if(!d) return;
+  document.getElementById('modal-sig').textContent = d.sig;
+  document.getElementById('modal-title').textContent = d.title;
+  document.getElementById('modal-meta').textContent = d.meta;
+  document.getElementById('modal-body').textContent = d.body;
+  var ev = d.evidence.map(function(e){ return '<div style="font-family:var(--fm);font-size:10px;color:var(--t2);padding:6px 10px;background:rgba(255,255,255,0.025);border-left:2px solid rgba(234,179,8,0.4);border-radius:0 4px 4px 0;margin-bottom:5px;line-height:1.5;">'+e+'</div>'; }).join('');
+  document.getElementById('modal-evidence').innerHTML = ev;
+  document.getElementById('modal-rec').textContent = d.rec;
+  var confEl = document.getElementById('modal-conf');
+  confEl.textContent = d.conf;
+  confEl.className = 'pill '+(d.conf==='High confidence'?'p-green':d.conf==='Medium confidence'?'p-gold':'p-teal');
+  document.getElementById('modal-conf-desc').textContent = d.confDesc;
+  document.getElementById('insight-modal-overlay').style.display = 'flex';
+}
+function closeInsightModal() {
+  document.getElementById('insight-modal-overlay').style.display = 'none';
+}
+function showDeployHook() { go('deploy-hook'); }
+function hideDeployHook() { go('settings'); setTimeout(function(){ switchSettingsTab('integrations',null); }, 50); }
+function toggleInsight(id) {
+  var full = document.getElementById(id+'-full');
+  var ev = document.getElementById(id+'-ev');
+  var exp = document.querySelector('#'+id+' .expand');
+  if (!full) return;
+  var open = full.style.display !== 'none';
+  full.style.display = open ? 'none' : 'block';
+  if (ev) ev.style.display = open ? 'none' : 'block';
+  if (exp) exp.textContent = open ? 'Expand ↓' : 'Collapse ↑';
+}
+</script>
+</body>
+</html>
